@@ -1,0 +1,111 @@
+# ==========================
+# React (Vite / CRA)
+# ==========================
+
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.cache/
+frontend/.eslintcache
+
+# Environment files
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+frontend/.env.test.local
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# ==========================
+# FastAPI / Python
+# ==========================
+
+# Virtual Environment
+backend/venv/
+backend/.venv/
+backend/env/
+backend/ENV/
+
+# Python cache
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/*$py.class
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+backend/.env
+
+# SQLite
+backend/*.db
+backend/*.sqlite3
+
+# Pytest
+backend/.pytest_cache/
+
+# MyPy
+backend/.mypy_cache/
+
+# Ruff
+backend/.ruff_cache/
+
+# Coverage
+backend/.coverage
+backend/htmlcov/
+
+# Jupyter
+backend/.ipynb_checkpoints/
+
+# ==========================
+# IDE
+# ==========================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================
+# OS Files
+# ==========================
+
+.DS_Store
+Thumbs.db
+
+# ==========================
+# Logs
+# ==========================
+
+*.log
+
+# ==========================
+# Build & Cache
+# ==========================
+
+.cache/
+temp/
+tmp/
+
+# ==========================
+# Secrets
+# ==========================
+
+.env
+.env.*
+!.env.example
+
+# ==========================
+# Misc
+# ==========================
+
+*.bak
+*.tmp

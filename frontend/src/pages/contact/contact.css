@@ -1,0 +1,36 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;600;700&display=swap');
+
+.contact-page-theme {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9;
+}
+.contact-page-theme h1, 
+.contact-page-theme h2, 
+.contact-page-theme h3, 
+.contact-page-theme h4, 
+.contact-page-theme .nav-link {
+  font-family: 'Archivo Narrow', sans-serif;
+}
+/* Header Hanging Icons Effect */
+.contact-page-theme .hanging-icon-container {
+  position: relative;
+}
+.contact-page-theme .hanging-icon {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.contact-page-theme .hanging-icon:hover {
+  transform: translateY(15px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+/* Custom Scrollbar */
+.contact-page-theme ::-webkit-scrollbar {
+  width: 8px;
+}
+.contact-page-theme ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.contact-page-theme ::-webkit-scrollbar-thumb {
+  background: #c00000;
+  border-radius: 4px;
+}

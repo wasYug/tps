@@ -1,0 +1,432 @@
+
+.result-page-theme {
+  --color-on-surface-variant: #5b403d;
+  --color-on-surface: #1c1b1b;
+  --color-surface-container-low: #f6f3f2;
+  --color-on-tertiary-fixed: #221b00;
+  --color-on-primary-fixed-variant: #930010;
+  --color-inverse-surface: #313030;
+  --color-tertiary: #705d00;
+  --color-secondary-fixed-dim: #a5c8ff;
+  --color-primary: #af101a;
+  --color-primary-fixed: #ffdad6;
+  --color-surface-container-highest: #e5e2e1;
+  --color-error-container: #ffdad6;
+  --color-primary-container: #d32f2f;
+  --color-secondary: #005faf;
+  --color-primary-fixed-dim: #ffb3ac;
+  --color-on-primary-container: #fff2f0;
+  --color-on-secondary-fixed: #001c3a;
+  --color-on-primary-fixed: #410003;
+  --color-on-tertiary: #ffffff;
+  --color-outline-variant: #e4beba;
+  --color-error: #ba1a1a;
+  --color-surface: #fcf9f8;
+  --color-on-secondary-fixed-variant: #004786;
+  --color-secondary-container: #54a0fe;
+  --color-background: #fcf9f8;
+  --color-on-tertiary-fixed-variant: #544600;
+  --color-surface-container-lowest: #ffffff;
+  --color-tertiary-container: #caa900;
+  --color-surface-variant: #e5e2e1;
+  --color-on-error-container: #93000a;
+  --color-tertiary-fixed: #ffe170;
+  --color-on-error: #ffffff;
+  --color-on-primary: #ffffff;
+  --color-surface-container: #f0eded;
+  --color-surface-dim: #dcd9d9;
+  --color-secondary-fixed: #d4e3ff;
+  --color-surface-container-high: #eae7e7;
+  --color-inverse-on-surface: #f3f0ef;
+  --color-tertiary-fixed-dim: #e9c400;
+  --color-on-background: #1c1b1b;
+  --color-surface-tint: #ba1a20;
+  --color-on-secondary-container: #003567;
+  --color-on-secondary: #ffffff;
+  --color-inverse-primary: #ffb3ac;
+  --color-outline: #8f6f6c;
+  --color-surface-bright: #fcf9f8;
+  --color-on-tertiary-container: #4c3f00;
+  
+  --spacing-container-max: 1280px;
+  --spacing-margin-mobile: 20px;
+  --spacing-margin-desktop: 64px;
+}
+
+/* ============================================ */
+/* Material Symbols                              */
+/* ============================================ */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ============================================ */
+/* Glass Card                                    */
+/* ============================================ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.04),
+    0 10px 30px -5px rgba(25, 118, 210, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.glass-card:hover {
+  box-shadow:
+    0 8px 16px -2px rgba(0, 0, 0, 0.06),
+    0 20px 50px -10px rgba(25, 118, 210, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================ */
+/* Hero Pattern                                  */
+/* ============================================ */
+.hero-pattern {
+  background-image:
+    radial-gradient(#af101a 0.5px, transparent 0.5px),
+    radial-gradient(#005faf 0.5px, #fcf9f8 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+  opacity: 0.05;
+}
+
+/* ============================================ */
+/* Floating Animation                            */
+/* ============================================ */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(3deg); }
+}
+
+/* ============================================ */
+/* Fade-In Animations (staggered)               */
+/* ============================================ */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.7s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up-delay-1 { animation-delay: 0.1s; }
+.fade-in-up-delay-2 { animation-delay: 0.2s; }
+.fade-in-up-delay-3 { animation-delay: 0.35s; }
+.fade-in-up-delay-4 { animation-delay: 0.5s; }
+
+/* ============================================ */
+/* Scale-In Animation for cards                  */
+/* ============================================ */
+.scale-in {
+  opacity: 0;
+  transform: scale(0.92);
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+@keyframes scaleIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================ */
+/* Topper Card Enter Animation                   */
+/* ============================================ */
+.topper-card-enter {
+  opacity: 0;
+  transform: translateY(20px) scale(0.96);
+  animation: topperCardEnter 0.45s ease-out forwards;
+}
+
+@keyframes topperCardEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Rank 1 rotating gradient ring */
+.rank1-ring {
+  position: relative;
+}
+
+.rank1-ring::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--color-tertiary-container),
+    var(--color-secondary),
+    var(--color-primary),
+    var(--color-tertiary-container)
+  );
+  animation: spinRing 4s linear infinite;
+  z-index: -1;
+}
+
+@keyframes spinRing {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================ */
+/* Shimmer Effect (for rank #1 badges)           */
+/* ============================================ */
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-badge::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 45%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 55%,
+    transparent 70%
+  );
+  animation: shimmer 3.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(20deg); }
+  100% { transform: translateX(100%) rotate(20deg); }
+}
+
+/* ============================================ */
+/* Achievement Banner Glow                       */
+/* ============================================ */
+.achievement-banner {
+  position: relative;
+}
+
+.achievement-banner::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, #af101a, #005faf, #caa900, #af101a);
+  background-size: 300% 300%;
+  animation: gradientShift 6s ease infinite;
+  z-index: -1;
+  opacity: 0.3;
+  filter: blur(12px);
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ============================================ */
+/* Stat Counter Pulse                            */
+/* ============================================ */
+.stat-pulse {
+  animation: statPulse 2s ease-in-out infinite;
+}
+
+@keyframes statPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+/* ============================================ */
+/* Custom Scrollbar                              */
+/* ============================================ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(175, 16, 26, 0.2);
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(175, 16, 26, 0.4);
+}
+
+/* ============================================ */
+/* Progress Bar Glow                             */
+/* ============================================ */
+.progress-bar-glow {
+  position: relative;
+}
+
+.progress-bar-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 100%;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.6);
+  filter: blur(4px);
+  animation: progressGlow 2s ease-in-out infinite;
+}
+
+@keyframes progressGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ============================================ */
+/* View All Button                               */
+/* ============================================ */
+.view-all-btn {
+  position: relative;
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.view-all-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+  z-index: -1;
+  border-radius: 9999px;
+}
+
+.view-all-btn:hover {
+  box-shadow: inset 0px 0px 6px 3px rgba(175, 16, 26, 1);
+  border-color: var(--color-primary);
+}
+
+.view-all-btn:hover::before {
+  transform: scaleX(1);
+}
+
+/* ============================================ */
+/* Bar Chart Bars Hover                          */
+/* ============================================ */
+.chart-bar {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.chart-bar:hover {
+  filter: brightness(1.15);
+  transform: scaleY(1.03);
+  transform-origin: bottom;
+}
+
+/* ============================================ */
+/* Topper Card Rank Badge Ring                   */
+/* ============================================ */
+.rank-badge {
+  position: relative;
+}
+
+.rank-badge::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--color-primary),
+    var(--color-secondary),
+    var(--color-tertiary-container),
+    var(--color-primary)
+  );
+  animation: rotateBadge 4s linear infinite;
+  z-index: -1;
+}
+
+@keyframes rotateBadge {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================ */
+/* Section Divider Ornament                      */
+/* ============================================ */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-outline-variant),
+    transparent
+  );
+}
+
+/* ============================================ */
+/* Smooth expand/collapse                        */
+/* ============================================ */
+.toppers-grid {
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================ */
+/* CTA Ripple Effect on Hero Button              */
+/* ============================================ */
+.cta-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 10%, transparent 10.01%);
+  transform: scale(10);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.8s;
+}
+
+.cta-btn:active::after {
+  transform: scale(0);
+  opacity: 1;
+  transition: 0s;
+}
