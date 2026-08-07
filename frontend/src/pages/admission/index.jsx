@@ -169,7 +169,7 @@ export default function AdmissionPage() {
         message: formData.message.trim() || null,
       };
 
-      const response = await fetch("http://localhost:8000/api/admission/", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admission/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

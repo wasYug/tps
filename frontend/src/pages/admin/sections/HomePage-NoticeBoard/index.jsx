@@ -170,7 +170,7 @@ export default function HomePage() {
                 date: noticeForm.date || new Date().toISOString().slice(0, 10),
             };
 
-            const response = await fetch("http://localhost:8000/api/admin/noticeboard", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/noticeboard`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify(payload),
@@ -197,7 +197,7 @@ export default function HomePage() {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             };
 
-            const response = await fetch(`http://localhost:8000/api/admin/noticeboard/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/noticeboard/${id}`, {
                 method: "DELETE",
                 headers,
             });
@@ -249,7 +249,7 @@ export default function HomePage() {
                 date: eventForm.date || new Date().toISOString().slice(0, 10),
             };
 
-            const response = await fetch("http://localhost:8000/api/admin/events", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/events`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify(payload),
@@ -276,7 +276,7 @@ export default function HomePage() {
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
             };
 
-            const response = await fetch(`http://localhost:8000/api/admin/events/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/events/${id}`, {
                 method: "DELETE",
                 headers,
             });

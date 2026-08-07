@@ -111,7 +111,7 @@ export default function AlumniPage() {
                 experience: speakForm.bio.trim(),
             };
 
-            const response = await fetch('http://localhost:8000/api/alumni/', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/alumni/`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export default function AlumniPage() {
         }
         setNewsletterSubmitting(true);
         try {
-            const response = await fetch('http://localhost:8000/api/newsletter/', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/newsletter/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: newsletterEmail.trim() }),

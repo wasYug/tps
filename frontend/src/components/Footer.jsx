@@ -21,7 +21,7 @@ export default function Footer() {
     
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:8000/api/newsletter/', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/newsletter/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim() }),
