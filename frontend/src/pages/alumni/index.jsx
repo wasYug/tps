@@ -12,7 +12,7 @@ const {
 } = await supabase.auth.getSession();
 
 if (!session) {
-    throw new Error("User is not logged in.");
+    // throw new Error("User is not logged in.");
 }
 
 
