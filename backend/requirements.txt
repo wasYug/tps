@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+email-validator
+supabase
+PyJWT[crypto]
