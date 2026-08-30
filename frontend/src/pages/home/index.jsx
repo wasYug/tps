@@ -431,36 +431,47 @@ export default function App() {
                 {notices.length === 0 ? (
                   <p className="text-sm text-neutral-500 italic">No notices at this time.</p>
                 ) : (
-                  notices.map((notice) => (
-                    <Card
-                      key={notice.id}
-                      className="border-t-0 border-r-0 border-b-0 border-l-4 border-solid p-4 sm:p-6 gap-2 transition-all hover:shadow-md"
-                      style={{ borderLeftColor: notice.color || "#2F79B8" }}
-                    >
-                      <CardHeader className="p-0 gap-1">
-                        <span
-                          className="font-semibold uppercase text-[10px] sm:text-xs leading-4 tracking-[3.84px]"
-                          style={{ color: notice.color || "#de0a26" }}
-                        >
-                          {notice.main_heading_1}
-                        </span>
-                        <h3 className="font-bold text-base sm:text-lg leading-7">
-                          {notice.main_heading_2}
-                        </h3>
-                      </CardHeader>
-                      <CardContent className="p-0 gap-2">
-                        <p className="text-[#294868] text-xs sm:text-sm leading-6">
-                          {notice.content}
-                        </p>
-                        {notice.date && (
-                          <span className="inline-flex font-medium text-[#294868] text-xs leading-4 mt-1 items-center gap-1.5">
-                            <Calendar className="size-3.5" />
-                            {notice.date}
+                  notices.map((notice) => {
+                    let formattedDate = notice.date;
+                    if (notice.date && typeof notice.date === "string") {
+                      const { day, month } = getDayAndMonth(notice.date);
+                      const year = notice.date.split("-")[0];
+                      if (month !== "---") {
+                        formattedDate = `${month} ${day}, ${year}`;
+                      }
+                    }
+
+                    return (
+                      <Card
+                        key={notice.id}
+                        className="border-t-0 border-r-0 border-b-0 border-l-4 border-solid p-4 sm:p-6 gap-2 transition-all hover:shadow-md"
+                        style={{ borderLeftColor: notice.color || "#2F79B8" }}
+                      >
+                        <CardHeader className="p-0 gap-1">
+                          <span
+                            className="font-semibold uppercase text-[10px] sm:text-xs leading-4 tracking-[3.84px]"
+                            style={{ color: notice.color || "#de0a26" }}
+                          >
+                            {notice.main_heading_1}
                           </span>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))
+                          <h3 className="font-bold text-base sm:text-lg leading-7">
+                            {notice.main_heading_2}
+                          </h3>
+                        </CardHeader>
+                        <CardContent className="p-0 gap-2">
+                          <p className="text-[#294868] text-xs sm:text-sm leading-6">
+                            {notice.content}
+                          </p>
+                          {notice.date && (
+                            <span className="inline-flex font-medium text-[#294868] text-xs leading-4 mt-1 items-center gap-1.5">
+                              <Calendar className="size-3.5" />
+                              {formattedDate}
+                            </span>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })
                 )}
               </div>
             </div>
