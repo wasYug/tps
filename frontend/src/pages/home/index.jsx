@@ -48,6 +48,14 @@ const getDayAndMonth = (dateString, fallbackDay, fallbackMonth) => {
 export default function App() {
   const [notices, setNotices] = useState([]);
   const [events, setEvents] = useState([]);
+  const [legacyImage, setLegacyImage] = useState(null);
+  const [legacyYears, setLegacyYears] = useState(null);
+  const [boardSuccessRate, setBoardSuccessRate] = useState(null);
+  const [globalTieUp, setGlobalTieUp] = useState(null);
+  const [proudAlumni, setProudAlumni] = useState(null);
+  const [nationalAwards, setNationalAwards] = useState(null);
+  const [researchLab, setResearchLab] = useState(null);
+  const [parentTrust, setParentTrust] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -80,6 +88,36 @@ export default function App() {
         }
       } catch (err) {
         console.error("Error fetching events:", err);
+      }
+
+      try {
+        const { data: settingsData, error: settingsError } = await supabase
+          .from("site_settings")
+          .select("key, value")
+          .in("key", ["home_legacy_image", "home_legacy_years", "home_board_success_rate", "home_global_tie_up", "home_proud_alumni", "home_national_awards", "home_research_lab", "home_parent_trust"]);
+
+        if (!settingsError && settingsData) {
+          const imgSetting = settingsData.find(s => s.key === "home_legacy_image");
+          const yrsSetting = settingsData.find(s => s.key === "home_legacy_years");
+          const bsrSetting = settingsData.find(s => s.key === "home_board_success_rate");
+          const gtuSetting = settingsData.find(s => s.key === "home_global_tie_up");
+          const paSetting = settingsData.find(s => s.key === "home_proud_alumni");
+          const naSetting = settingsData.find(s => s.key === "home_national_awards");
+          const rlSetting = settingsData.find(s => s.key === "home_research_lab");
+          const ptSetting = settingsData.find(s => s.key === "home_parent_trust");
+          if (imgSetting) setLegacyImage(imgSetting.value);
+          if (yrsSetting) setLegacyYears(yrsSetting.value);
+          if (bsrSetting) setBoardSuccessRate(bsrSetting.value);
+          if (gtuSetting) setGlobalTieUp(gtuSetting.value);
+          if (paSetting) setProudAlumni(paSetting.value);
+          if (naSetting) setNationalAwards(naSetting.value);
+          if (rlSetting) setResearchLab(rlSetting.value);
+          if (ptSetting) setParentTrust(ptSetting.value);
+        } else if (settingsError) {
+          console.error("Error fetching site settings:", settingsError);
+        }
+      } catch (err) {
+        console.error("Error fetching site settings:", err);
       } finally {
         setLoading(false);
       }
@@ -188,7 +226,7 @@ export default function App() {
             <div className="relative">
               <div className="size-16 sm:size-24 rounded-2xl bg-[#95BAD4]/30 absolute -left-2 sm:-left-4 -top-2 sm:-top-4" />
               <img
-                src="https://images.unsplash.com/photo-1723186051621-5c9de14e1a1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwY2xhc3Nyb29tJTIwYmxhY2slMjBhbmQlMjB3aGl0ZSUyMHZpbnRhZ2V8ZW58MXwyfHx8MTc4MTcxNTQ3OHww&ixlib=rb-4.1.0&q=80&w=800"
+                src={legacyImage || "https://images.unsplash.com/photo-1723186051621-5c9de14e1a1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHN0dWR5aW5nJTIwY2xhc3Nyb29tJTIwYmxhY2slMjBhbmQlMjB3aGl0ZSUyMHZpbnRhZ2V8ZW58MXwyfHx8MTc4MTcxNTQ3OHww&ixlib=rb-4.1.0&q=80&w=800"}
                 alt="Students studying"
                 className="relative aspect-square object-cover grayscale rounded-2xl w-full"
                 data-photoid="T1Y9W3ogL9A"
@@ -232,7 +270,7 @@ export default function App() {
                 </span>
                 <div className="items-baseline flex mt-4 gap-2 justify-center lg:justify-start">
                   <span className="font-bold text-[#C22715] text-6xl sm:text-7xl leading-none">
-                    26
+                    {legacyYears || "26"}
                   </span>
                   <span className="font-bold text-neutral-950 text-xl sm:text-2xl leading-8">
                     Years
@@ -253,7 +291,7 @@ export default function App() {
                     icon: Award,
                     color: "#2F79B8",
                     bg: "#2F79B8",
-                    val: "98%",
+                    val: boardSuccessRate ? boardSuccessRate + "%" : "98%",
                     label: "Board Success Rate",
                     desc: "Consistent academic distinction across all examination boards.",
                   },
@@ -261,7 +299,7 @@ export default function App() {
                     icon: Globe,
                     color: "#DD9808",
                     bg: "#DD9808",
-                    val: "40+",
+                    val: globalTieUp ? globalTieUp + "+" : "40+",
                     label: "Global Tie-ups",
                     desc: "International exchange and collaboration programs worldwide.",
                   },
@@ -269,7 +307,7 @@ export default function App() {
                     icon: GraduationCap,
                     color: "#C22715",
                     bg: "#C22715",
-                    val: "12K+",
+                    val: proudAlumni ? proudAlumni + "+" : "12K+",
                     label: "Proud Alumni",
                     desc: "A growing network of leaders across diverse industries.",
                   },
@@ -277,7 +315,7 @@ export default function App() {
                     icon: Trophy,
                     color: "#DD9808",
                     bg: "#DD9808",
-                    val: "320+",
+                    val: nationalAwards ? nationalAwards + "+" : "320+",
                     label: "National Awards",
                     desc: "Recognized for academic and extracurricular excellence.",
                   },
@@ -285,7 +323,7 @@ export default function App() {
                     icon: Microscope,
                     color: "#2F79B8",
                     bg: "#2F79B8",
-                    val: "25",
+                    val: researchLab || "25",
                     label: "Research Labs",
                     desc: "Equipped for hands-on STEM and innovation projects.",
                   },
@@ -293,7 +331,7 @@ export default function App() {
                     icon: HeartHandshake,
                     color: "#C22715",
                     bg: "#C22715",
-                    val: "100%",
+                    val: parentTrust ? parentTrust + "%" : "100%",
                     label: "Parent Trust",
                     desc: "A legacy of confidence built over two and a half decades.",
                   },

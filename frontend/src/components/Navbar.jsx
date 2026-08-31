@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import {
+  Award,
   Home,
   Info,
   BookOpen,
@@ -360,7 +361,20 @@ export default function Navbar({ theme = "transparent" }) {
           desc: "Co-curricular Clubs of TPS",
         }
     ] },
-    { icon: FileText, label: "Admissions", to: "/admission" },
+    { icon: FileText, label: "Admissions", dropdown: true, children: [
+      {
+        to: "/admission",
+        label: "Admission",
+        Icon: FileText,
+        desc: "Admission of TPS",
+      },
+      {
+        to: "/scholarship",
+        label: "Scholarship",
+        Icon: Award,
+        desc: "Scholarship of TPS",
+      }
+    ]},
     {
       icon: Users,
       label: "Campus Life",

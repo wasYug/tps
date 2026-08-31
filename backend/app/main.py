@@ -38,4 +38,12 @@ async def root():
         "message": "School Website Backend"
     }
 
+@app.get("/api/health")
+async def health():
+    return {
+        "status": "healthy",
+        "message": "School Website Backend is Healthy"
+    }
+
+
 # uvicorn app.main:app --reload
