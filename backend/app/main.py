@@ -38,7 +38,7 @@ async def root():
         "message": "School Website Backend"
     }
 
-@app.get("/api/health")
+@app.head("/api/health")
 async def health():
     return {
         "status": "healthy",
