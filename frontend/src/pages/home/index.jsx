@@ -56,6 +56,18 @@ export default function App() {
   const [nationalAwards, setNationalAwards] = useState(null);
   const [researchLab, setResearchLab] = useState(null);
   const [parentTrust, setParentTrust] = useState(null);
+  const [infraClassImg, setInfraClassImg] = useState(null);
+  const [infraSciLabImg, setInfraSciLabImg] = useState(null);
+  const [infraComputerLabImg, setInfraComputerLabImg] = useState(null);
+  const [infraGroundImg, setInfraGroundImg] = useState(null);
+  const [infraLibImg, setInfraLibImg] = useState(null);
+  const [principalMessage1, setPrincipalMessage1] = useState(null);
+  const [principalMessage2, setPrincipalMessage2] = useState(null);
+  const [campusHeroImg, setCampusHeroImg] = useState(null);
+  const [campusLibImg, setCampusLibImg] = useState(null);
+  const [campusLabImg, setCampusLabImg] = useState(null);
+  const [campusGroundImg, setCampusGroundImg] = useState(null);
+  const [campusPreviewImg, setCampusPreviewImg] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -94,7 +106,7 @@ export default function App() {
         const { data: settingsData, error: settingsError } = await supabase
           .from("site_settings")
           .select("key, value")
-          .in("key", ["home_legacy_image", "home_legacy_years", "home_board_success_rate", "home_global_tie_up", "home_proud_alumni", "home_national_awards", "home_research_lab", "home_parent_trust"]);
+          .in("key", ["home_legacy_image", "home_legacy_years", "home_board_success_rate", "home_global_tie_up", "home_proud_alumni", "home_national_awards", "home_research_lab", "home_parent_trust", "home_infra_class", "home_infra_sci_lab", "home_infra_computer_lab", "home_infra_ground", "home_infra_lib", "home_principal_message_1", "home_principal_message_2", "home_campus_hero", "home_campus_lib", "home_campus_lab", "home_campus_ground", "home_campus_preview"]);
 
         if (!settingsError && settingsData) {
           const imgSetting = settingsData.find(s => s.key === "home_legacy_image");
@@ -105,6 +117,18 @@ export default function App() {
           const naSetting = settingsData.find(s => s.key === "home_national_awards");
           const rlSetting = settingsData.find(s => s.key === "home_research_lab");
           const ptSetting = settingsData.find(s => s.key === "home_parent_trust");
+          const infraClassSetting = settingsData.find(s => s.key === "home_infra_class");
+          const infraSciLabSetting = settingsData.find(s => s.key === "home_infra_sci_lab");
+          const infraComputerLabSetting = settingsData.find(s => s.key === "home_infra_computer_lab");
+          const infraGroundSetting = settingsData.find(s => s.key === "home_infra_ground");
+          const infraLibSetting = settingsData.find(s => s.key === "home_infra_lib");
+          const princMsg1Setting = settingsData.find(s => s.key === "home_principal_message_1");
+          const princMsg2Setting = settingsData.find(s => s.key === "home_principal_message_2");
+          const campusHeroSetting = settingsData.find(s => s.key === "home_campus_hero");
+          const campusLibSetting = settingsData.find(s => s.key === "home_campus_lib");
+          const campusLabSetting = settingsData.find(s => s.key === "home_campus_lab");
+          const campusGroundSetting = settingsData.find(s => s.key === "home_campus_ground");
+          const campusPreviewSetting = settingsData.find(s => s.key === "home_campus_preview");
           if (imgSetting) setLegacyImage(imgSetting.value);
           if (yrsSetting) setLegacyYears(yrsSetting.value);
           if (bsrSetting) setBoardSuccessRate(bsrSetting.value);
@@ -113,6 +137,18 @@ export default function App() {
           if (naSetting) setNationalAwards(naSetting.value);
           if (rlSetting) setResearchLab(rlSetting.value);
           if (ptSetting) setParentTrust(ptSetting.value);
+          if (infraClassSetting) setInfraClassImg(infraClassSetting.value);
+          if (infraSciLabSetting) setInfraSciLabImg(infraSciLabSetting.value);
+          if (infraComputerLabSetting) setInfraComputerLabImg(infraComputerLabSetting.value);
+          if (infraGroundSetting) setInfraGroundImg(infraGroundSetting.value);
+          if (infraLibSetting) setInfraLibImg(infraLibSetting.value);
+          if (princMsg1Setting) setPrincipalMessage1(princMsg1Setting.value);
+          if (princMsg2Setting) setPrincipalMessage2(princMsg2Setting.value);
+          if (campusHeroSetting) setCampusHeroImg(campusHeroSetting.value);
+          if (campusLibSetting) setCampusLibImg(campusLibSetting.value);
+          if (campusLabSetting) setCampusLabImg(campusLabSetting.value);
+          if (campusGroundSetting) setCampusGroundImg(campusGroundSetting.value);
+          if (campusPreviewSetting) setCampusPreviewImg(campusPreviewSetting.value);
         } else if (settingsError) {
           console.error("Error fetching site settings:", settingsError);
         }
@@ -376,7 +412,7 @@ export default function App() {
               {/* Smart Classes – wide on large */}
               <div className="relative sm:col-span-2 lg:col-span-2 rounded-2xl h-48 sm:h-56 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGNsYXNzcm9vbSUyMG1vZGVybiUyMGludGVyYWN0aXZlJTIwdGVjaG5vbG9neXxlbnwxfDB8fHwxNzgxNzE1NDg4fDA&ixlib=rb-4.1.0&q=80&w=900"
+                  src={infraClassImg || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGNsYXNzcm9vbSUyMG1vZGVybiUyMGludGVyYWN0aXZlJTIwdGVjaG5vbG9neXxlbnwxfDB8fHwxNzgxNzE1NDg4fDA&ixlib=rb-4.1.0&q=80&w=900"}
                   alt="Smart Classes"
                   className="object-cover w-full h-full"
                 />
@@ -392,25 +428,25 @@ export default function App() {
               </div>
               {[
                 {
-                  src: "https://images.unsplash.com/photo-1684259498900-afdea87b1a97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFib3JhdG9yeSUyMHN0dWRlbnRzJTIwZXhwZXJpbWVudHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=600",
+                  src: infraSciLabImg || "https://images.unsplash.com/photo-1684259498900-afdea87b1a97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFib3JhdG9yeSUyMHN0dWRlbnRzJTIwZXhwZXJpbWVudHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=600",
                   alt: "Science Labs",
                   title: "Science Labs",
                   sub: "Experimental Discovery",
                 },
                 {
-                  src: "https://images.unsplash.com/photo-1569653402334-2e98fbaa80ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxjb21wdXRlciUyMGxhYiUyMHRlY2hub2xvZ3klMjBzdHVkZW50c3xlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=600",
+                  src: infraComputerLabImg || "https://images.unsplash.com/photo-1569653402334-2e98fbaa80ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxjb21wdXRlciUyMGxhYiUyMHRlY2hub2xvZ3klMjBzdHVkZW50c3xlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=600",
                   alt: "Computer Lab",
                   title: "Computer Lab",
                   sub: "Computing Excellence",
                 },
                 {
-                  src: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzcG9ydHMlMjBzdGFkaXVtJTIwZm9vdGJhbGwlMjBmaWVsZCUyMGFlcmlhbHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=600",
+                  src: infraGroundImg || "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzcG9ydHMlMjBzdGFkaXVtJTIwZm9vdGJhbGwlMjBmaWVsZCUyMGFlcmlhbHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=600",
                   alt: "Sports Academy",
                   title: "Sports Academy",
                   sub: "Physical Excellence",
                 },
                 {
-                  src: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxsaWJyYXJ5JTIwYm9va3MlMjBzaGVsdmVzJTIwZ3JhbmR8ZW58MXwwfHx8MTc4MTcxNTQ3OHww&ixlib=rb-4.1.0&q=80&w=600",
+                  src: infraLibImg || "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxsaWJyYXJ5JTIwYm9va3MlMjBzaGVsdmVzJTIwZ3JhbmR8ZW58MXwwfHx8MTc4MTcxNTQ3OHww&ixlib=rb-4.1.0&q=80&w=600",
                   alt: "Library",
                   title: "Library",
                   sub: "Resource Hub",
@@ -645,15 +681,10 @@ export default function App() {
                 From The Principal's Desk
               </span>
               <blockquote className="italic font-bold text-2xl sm:text-3xl lg:text-4xl leading-tight tracking-tight mt-4">
-                "Education is not just about teaching, it's about igniting a
-                flame."
+                { "\"" + principalMessage1 + "\"" || "\"Education is not just about teaching, it's about igniting a flame.\""}
               </blockquote>
-              <p className="text-[#294868] text-xs sm:text-sm leading-6 mt-5 sm:mt-6">
-                At Takshashila, we believe that every child is a unique universe
-                waiting to be explored. Our commitment is to provide a
-                scaffolding of support, knowledge, and moral ethics that allows
-                them to ascend to their highest potential. Welcome to a legacy
-                of learning.
+              <p className="text-[#294868] text-xs sm:text-sm leading-6 mt-5 sm:mt-6 whitespace-pre-wrap">
+                {principalMessage2 || "At Takshashila, we believe that every child is a unique universe waiting to be explored. Our commitment is to provide a scaffolding of support, knowledge, and moral ethics that allows them to ascend to their highest potential. Welcome to a legacy of learning."}
               </p>
               <div className="mt-5 sm:mt-6">
                 <p className="font-bold text-sm sm:text-base leading-6">
@@ -698,26 +729,26 @@ export default function App() {
             <div className="grid grid-cols-2 sm:grid-cols-4 mt-6 sm:mt-8 gap-3 sm:gap-4">
               <div className="relative col-span-2 row-span-2 rounded-2xl overflow-hidden min-h-[160px] sm:min-h-[288px]">
                 <img
-                  src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBzY2hvb2wlMjBzdHVkZW50cyUyMGdyYWR1YXRpb24lMjBjZWxlYnJhdGlvbnxlbnwxfDB8fHwxNzgxNzE1NDg4fDA&ixlib=rb-4.1.0&q=80&w=900"
+                  src={campusHeroImg || "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBzY2hvb2wlMjBzdHVkZW50cyUyMGdyYWR1YXRpb24lMjBjZWxlYnJhdGlvbnxlbnwxfDB8fHwxNzgxNzE1NDg4fDA&ixlib=rb-4.1.0&q=80&w=900"}
                   alt="Graduation"
                   className="object-cover w-full h-full"
                 />
               </div>
               {[
                 {
-                  src: "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzcG9ydHMlMjBzdGFkaXVtJTIwZm9vdGJhbGwlMjBmaWVsZCUyMGFlcmlhbHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=400",
+                  src: campusGroundImg || "https://images.unsplash.com/photo-1556056504-5c7696c4c28d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzcG9ydHMlMjBzdGFkaXVtJTIwZm9vdGJhbGwlMjBmaWVsZCUyMGFlcmlhbHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=400",
                   alt: "Sports",
                 },
                 {
-                  src: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxsaWJyYXJ5JTIwYm9va3MlMjBzaGVsdmVzJTIwZ3JhbmR8ZW58MXwwfHx8MTc4MTcxNTQ3OHww&ixlib=rb-4.1.0&q=80&w=400",
+                  src: campusLibImg || "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxsaWJyYXJ5JTIwYm9va3MlMjBzaGVsdmVzJTIwZ3JhbmR8ZW58MXwwfHx8MTc4MTcxNTQ3OHww&ixlib=rb-4.1.0&q=80&w=400",
                   alt: "Library",
                 },
                 {
-                  src: "https://images.unsplash.com/photo-1684259498900-afdea87b1a97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFib3JhdG9yeSUyMHN0dWRlbnRzJTIwZXhwZXJpbWVudHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=400",
+                  src: campusLabImg || "https://images.unsplash.com/photo-1684259498900-afdea87b1a97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFib3JhdG9yeSUyMHN0dWRlbnRzJTIwZXhwZXJpbWVudHxlbnwxfDB8fHwxNzgxNzE1NDc4fDA&ixlib=rb-4.1.0&q=80&w=400",
                   alt: "Science",
                 },
                 {
-                  src: "https://images.unsplash.com/photo-1763890763432-17c9a529da20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBjYW1wdXMlMjB0cmVlJTIwcGF0aHdheSUyMHN0dWRlbnRzJTIwd2Fsa2luZ3xlbnwxfDF8fHwxNzgxNzE1NDg4fDA&ixlib=rb-4.1.0&q=80&w=400",
+                  src: campusPreviewImg || "https://images.unsplash.com/photo-1763890763432-17c9a529da20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3ODc2NDd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBjYW1wdXMlMjB0cmVlJTIwcGF0aHdheSUyMHN0dWRlbnRzJTIwd2Fsa2luZ3xlbnwxfDF8fHwxNzgxNzE1NDg4fDA&ixlib=rb-4.1.0&q=80&w=400",
                   alt: "Campus",
                 },
               ].map(({ src, alt }) => (

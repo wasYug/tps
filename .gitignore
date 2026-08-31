@@ -109,3 +109,6 @@ tmp/
 
 *.bak
 *.tmp
+
+# Admin Panel
+admin/
