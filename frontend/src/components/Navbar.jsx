@@ -23,7 +23,8 @@ import {
   LogOut,
   Newspaper,
   Compass,
-  Calendar
+  Calendar,
+  DollarSign,
 } from "lucide-react";
 
 // ── Desktop plain NavLink item ───────────────────────────────────────────────
@@ -367,6 +368,12 @@ export default function Navbar({ theme = "transparent" }) {
         label: "Admission",
         Icon: FileText,
         desc: "Admission of TPS",
+      },
+      {
+        to: "/fee-structure",
+        label: "Fee Structure",
+        Icon: DollarSign,
+        desc: "Fee Structure of TPS",
       },
       {
         to: "/scholarship",

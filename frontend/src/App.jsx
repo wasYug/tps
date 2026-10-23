@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from "./components/ProtectedRoute";
+import ChatbotWidget from './components/chatbotwidget';
 
 import HomePage from './pages/home';
 import AdmissionPage from './pages/admission';
+import FeeStructurePage from './pages/fee-structure';
 import InfrastructurePage from './pages/infrasturcture';
 import ResultPage from './pages/result';
 import FacultyPage from './pages/faculty';
@@ -45,6 +47,7 @@ function App() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/alumni" element={<AlumniPage />} />
       <Route path="/admission" element={<AdmissionPage />} />
+      <Route path="/fee-structure" element={<FeeStructurePage />} />
       <Route path="/infra" element={<InfrastructurePage />} />
       <Route path="/result" element={<ResultPage />} />
       <Route path="/faculty" element={<FacultyPage />} />
@@ -62,6 +65,7 @@ function App() {
       {/* 404 Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>
+    <ChatbotWidget />
     </>
   );
 }
