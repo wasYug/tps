@@ -4,6 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers.public import contact, admission, alumni, newsletter
 from app.routers.admin import noticeboard, events
 
+from app.routers.public import chatbot
+
 app = FastAPI(
     title="School Website API",
     version="1.0.0",
@@ -30,6 +32,7 @@ app.include_router(alumni.router)
 app.include_router(newsletter.router)
 app.include_router(noticeboard.router)
 app.include_router(events.router)
+app.include_router(chatbot.router,)
 
 @app.get("/")
 async def root():

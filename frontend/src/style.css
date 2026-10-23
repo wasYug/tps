@@ -62,6 +62,38 @@ body {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes tpsLogoBlink {
+  0%, 100% {
+    opacity: 0.22;
+    transform: scale(0.92);
+    filter: drop-shadow(0 0 2px rgba(47, 121, 184, 0.25));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 16px rgba(47, 121, 184, 0.75));
+  }
+}
+
+.animate-tps-logo-blink {
+  animation: tpsLogoBlink 1.7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes tpsGlowRing {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.18);
+  }
+}
+
+.animate-tps-ring {
+  animation: tpsGlowRing 1.7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 /* Custom Scrollbar */
 /* Firefox */
 html {
@@ -89,4 +121,19 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #7a7a7a;
+}
+
+/* Suppress scrollbar and stepper arrows on chat textarea */
+.chat-textarea::-webkit-scrollbar,
+.chat-textarea::-webkit-scrollbar-button,
+.chat-textarea::-webkit-resizer {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.chat-textarea {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  resize: none !important;
 }

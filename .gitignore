@@ -112,3 +112,12 @@ tmp/
 
 # Admin Panel
 admin/
+
+# Archive files
+*.zip
+
+# Secret keys
+keys.json
+
+# Test directory
+test/

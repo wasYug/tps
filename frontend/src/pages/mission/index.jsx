@@ -1,13 +1,76 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { ShieldCheck, Award, Users, Lightbulb, PlayCircle, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Award, Users, Lightbulb, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
+
+const defaultMissionData = {
+  hero: {
+    title: "Transforming Young Minds into Global Citizens",
+    desc: "To be a world-class institution that transforms young minds into global citizens who are intellectually competent, morally upright, and socially committed.",
+    image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80"
+  },
+  mission: {
+    statement: "We strive to provide a balanced education that promotes critical thinking, fosters creativity, and encourages physical well-being through integrated learning pathways."
+  },
+  values: [
+    { title: "Integrity", tag: "Character First", desc: "We uphold honesty, accountability, and respect in every academic and personal endeavor." },
+    { title: "Excellence", tag: "Aim Higher", desc: "We pursue high standards in scholarship, athletics, and the arts through discipline and dedication." },
+    { title: "Community", tag: "Belong Together", desc: "We foster belonging, encouragement, and shared responsibility across our entire school family." },
+    { title: "Innovation", tag: "Think Forward", desc: "We embrace new ideas and tools that prepare students for a changing, dynamic world." }
+  ],
+  cta: {
+    title: "Your Future Starts Here.",
+    image: "https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=1920&q=80"
+  }
+};
 
 export default function MissionPage() {
+  const [missionData, setMissionData] = useState(defaultMissionData);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    async function fetchSiteSettings() {
+      try {
+        const keysToFetch = [
+          "mission_hero_title", "mission_hero_desc", "mission_hero_image",
+          "mission_statement"
+        ];
+        
+
+
+        const { data: settingsData, error: settingsError } = await supabase
+          .from("site_settings")
+          .select("key, value")
+          .in("key", keysToFetch);
+
+        if (!settingsError && settingsData) {
+          const settingsMap = settingsData.reduce((acc, curr) => {
+            acc[curr.key] = curr.value;
+            return acc;
+          }, {});
+
+          setMissionData(prevData => {
+            const newData = JSON.parse(JSON.stringify(prevData));
+            
+            if (settingsMap.mission_hero_title) newData.hero.title = settingsMap.mission_hero_title;
+            if (settingsMap.mission_hero_desc) newData.hero.desc = settingsMap.mission_hero_desc;
+            if (settingsMap.mission_hero_image) newData.hero.image = settingsMap.mission_hero_image;
+
+            if (settingsMap.mission_statement) newData.mission.statement = settingsMap.mission_statement;
+
+            return newData;
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching site settings for mission page:", err);
+      }
+    }
+
+    fetchSiteSettings();
   }, []);
 
   return (
@@ -26,10 +89,10 @@ export default function MissionPage() {
               <div className="w-12 h-1 bg-[#fb2c36] mb-6"></div>
               <p className="text-[#de0a26] font-bold tracking-widest text-sm uppercase mb-4">Our Mission</p>
               <h1 className="text-4xl lg:text-5xl font-bold font-serif leading-tight mb-6">
-                Transforming Young Minds into Global Citizens
+                {missionData.hero.title}
               </h1>
               <p className="text-lg text-white/80 mb-10 leading-relaxed max-w-md">
-                To be a world-class institution that transforms young minds into global citizens who are intellectually competent, morally upright, and socially committed.
+                {missionData.hero.desc}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button asChild className="bg-[#de0a26] hover:bg-[#c40707] text-black font-bold px-8 py-6 rounded-md">
@@ -45,7 +108,7 @@ export default function MissionPage() {
           {/* Right Image */}
           <div className="w-full lg:w-1/2 h-[50vh] lg:h-auto relative">
             <img 
-              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80" 
+              src={missionData.hero.image} 
               alt="Academic Building" 
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -62,7 +125,7 @@ export default function MissionPage() {
             
             <div className="space-y-6 text-[#0f2142] text-xl md:text-2xl leading-relaxed font-serif italic">
               <p>
-                "We strive to provide a balanced education that promotes critical thinking, fosters creativity, and encourages physical well-being through integrated learning pathways."
+                "{missionData.mission.statement}"
               </p>
             </div>
 
@@ -92,10 +155,10 @@ export default function MissionPage() {
                 <div className="w-12 h-12 bg-[#0f2142] rounded-lg flex items-center justify-center mb-6 shadow-md">
                   <ShieldCheck className="w-6 h-6 text-[#DD9808]" />
                 </div>
-                <h3 className="text-2xl font-bold text-[#0f2142] mb-2">Integrity</h3>
-                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">Character First</p>
+                <h3 className="text-2xl font-bold text-[#0f2142] mb-2">{missionData.values[0].title}</h3>
+                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">{missionData.values[0].tag}</p>
                 <p className="text-gray-600 leading-relaxed">
-                  We uphold honesty, accountability, and respect in every academic and personal endeavor.
+                  {missionData.values[0].desc}
                 </p>
               </div>
 
@@ -104,10 +167,10 @@ export default function MissionPage() {
                 <div className="w-12 h-12 bg-[#0f2142] rounded-lg flex items-center justify-center mb-6 backdrop-blur-sm">
                   <Award className="w-6 h-6 text-[#DD9808]" />
                 </div>
-                <h3 className="text-black font-bold text-2xl font-bold mb-2">Excellence</h3>
-                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">Aim Higher</p>
+                <h3 className="text-black font-bold text-2xl mb-2">{missionData.values[1].title}</h3>
+                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">{missionData.values[1].tag}</p>
                 <p className="text-black/90 leading-relaxed">
-                  We pursue high standards in scholarship, athletics, and the arts through discipline and dedication.
+                  {missionData.values[1].desc}
                 </p>
               </div>
 
@@ -116,10 +179,10 @@ export default function MissionPage() {
                 <div className="w-12 h-12 bg-[#0f2142] rounded-lg flex items-center justify-center mb-6 shadow-md">
                   <Users className="w-6 h-6 text-[#DD9808]" />
                 </div>
-                <h3 className="text-2xl font-bold text-[#0f2142] mb-2">Community</h3>
-                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">Belong Together</p>
+                <h3 className="text-2xl font-bold text-[#0f2142] mb-2">{missionData.values[2].title}</h3>
+                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">{missionData.values[2].tag}</p>
                 <p className="text-gray-600 leading-relaxed">
-                  We foster belonging, encouragement, and shared responsibility across our entire school family.
+                  {missionData.values[2].desc}
                 </p>
               </div>
 
@@ -128,10 +191,10 @@ export default function MissionPage() {
                 <div className="w-12 h-12 bg-[#0f2142] rounded-lg flex items-center justify-center mb-6 shadow-md">
                   <Lightbulb className="w-6 h-6 text-[#DD9808]" />
                 </div>
-                <h3 className="text-2xl font-bold text-[#0f2142] mb-2">Innovation</h3>
-                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">Think Forward</p>
+                <h3 className="text-2xl font-bold text-[#0f2142] mb-2">{missionData.values[3].title}</h3>
+                <p className="text-[#fb2c36] text-xs font-bold tracking-widest uppercase mb-4">{missionData.values[3].tag}</p>
                 <p className="text-gray-600 leading-relaxed">
-                  We embrace new ideas and tools that prepare students for a changing, dynamic world.
+                  {missionData.values[3].desc}
                 </p>
               </div>
             </div>
@@ -143,14 +206,14 @@ export default function MissionPage() {
           {/* Background Image */}
           <div 
             className="absolute inset-0 z-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=1920&q=80')` }}
+            style={{ backgroundImage: `url('${missionData.cta.image}')` }}
           />
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-[#0f2142]/80 z-0 mix-blend-multiply"></div>
           
           <div className="relative z-10 text-center px-6">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif text-white mb-10 shadow-sm">
-              Your Future Starts Here.
+              {missionData.cta.title}
             </h2>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild className="bg-[#fb2c36] hover:bg-[#d6242d] text-white font-bold px-8 py-6 rounded-md text-base">

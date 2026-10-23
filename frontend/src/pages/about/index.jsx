@@ -1,14 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import {Eye, Rocket, Scale, Trophy, Lightbulb } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
-
-const aboutData = {
+const defaultAboutData = {
     hero: {
         title: "Nurturing Tomorrow's Leaders",
-        subtitle: "A vibrant community where excellence meets enthusiasm in every performance and competition."
+        subtitle: "A vibrant community where excellence meets enthusiasm in every performance and competition.",
+        image: "/image.png"
     },
     welcome: {
         paragraphs: [
@@ -58,12 +59,89 @@ const aboutData = {
         { value: "5000+", label: "GLOBAL ALUMNI" },
         { value: "200+", label: "AWARDS WON" },
         { value: "85%", label: "DISTINCTION RATE" }
+    ],
+    principalMessage: [
+        "At TPS, we are committed to preparing students for the challenges of the 21st century. While we accord priority to academic excellence, we also lay strong emphasis on their wholesome development by achieving a balance among academic, physical and artistic pursuits. Our aim is to provide an enriching curriculum in a conducive learning environment.",
+        "The world-class facilities at our beautiful campus, with an efficient administrative backup and a team of competent, passionate teachers substantiate our commitment to quality.",
+        "We strive to provide globally competent education by blending the traditional education with modern communication. We seek and encourage learning out of the confines of the four walls and support the learners by instructional scaffolding so that the child not only learns independently but appreciates divergent thinking and applies the knowledge correctly.",
+        "The aim to provide skills to achieve goals and staying relevant in a dynamic environment is achieved through embracing ever-evolving technologies and sensibilities in the teaching-learning process.",
+        "We also believe in social inclusion and positive reflection to ensure Takshashila Public School remains the centre of excellence and creativity — a place where dreams find home without losing out our cultural wealth and experiences."
+    ],
+    managerMessage: [
+        "A school imparts knowledge to children, develops their skills, instills in them sound values, and nurtures their curiosity for lifelong learning. It sets the context for their future learning, and prepares them to be self-motivated and self-directed learners.",
+        "It also shapes their physical and mental health, and provides them with the environment for the holistic development and well-being. Our vision and everything that we do are guided by these educational precepts and practices, inspiring us to provide children with opportunities to grow to their full potential.",
+        "Our dedicated and caring educators teach our children not just with their minds but also with their hearts, making learning enjoyable, purposeful, and inclusive, and shape in them to be emotionally intelligent. They inspire our children to believe in themselves and think big with a growth mindset."
     ]
 };
 
 export default function AboutPage() {
+    const [aboutData, setAboutData] = useState(defaultAboutData);
+
     useEffect(() => {
         window.scrollTo(0, 0);
+
+        async function fetchSiteSettings() {
+            try {
+                const { data: settingsData, error: settingsError } = await supabase
+                    .from("site_settings")
+                    .select("key, value")
+                    .in("key", [
+                        "about_hero_image",
+                        "about_heritage_quote",
+                        "about_welcome_para_1",
+                        "about_welcome_para_2",
+                        "about_vision",
+                        "about_mission",
+                        "about_infra_digital_class_img",
+                        "about_infra_sports_complex_img",
+                        "about_principal_message",
+                        "about_manager_message",
+                        "about_achievements_years",
+                        "about_achievements_alumni",
+                        "about_achievements_awards",
+                        "about_achievements_distinction"
+                    ]);
+
+                if (!settingsError && settingsData) {
+                    const settingsMap = settingsData.reduce((acc, curr) => {
+                        acc[curr.key] = curr.value;
+                        return acc;
+                    }, {});
+
+                    setAboutData(prevData => {
+                        const newData = JSON.parse(JSON.stringify(prevData));
+                        
+                        if (settingsMap.about_hero_image) newData.hero.image = settingsMap.about_hero_image;
+                        if (settingsMap.about_heritage_quote) newData.welcome.heritage.quote = settingsMap.about_heritage_quote;
+                        
+                        if (settingsMap.about_welcome_para_1) newData.welcome.paragraphs[0] = settingsMap.about_welcome_para_1;
+                        if (settingsMap.about_welcome_para_2) newData.welcome.paragraphs[1] = settingsMap.about_welcome_para_2;
+
+                        if (settingsMap.about_vision) newData.visionMission.vision = settingsMap.about_vision;
+                        if (settingsMap.about_mission) newData.visionMission.mission = settingsMap.about_mission;
+
+                        if (settingsMap.about_infra_digital_class_img) newData.infrastructure[0].image = settingsMap.about_infra_digital_class_img;
+                        if (settingsMap.about_infra_sports_complex_img) newData.infrastructure[1].image = settingsMap.about_infra_sports_complex_img;
+
+                        if (settingsMap.about_principal_message) newData.principalMessage = settingsMap.about_principal_message.split('\n').filter(p => p.trim() !== '');
+                        if (settingsMap.about_manager_message) newData.managerMessage = settingsMap.about_manager_message.split('\n').filter(p => p.trim() !== '');
+
+                        if (settingsMap.about_achievements_years) newData.achievements[0].value = settingsMap.about_achievements_years + "+";
+                        if (settingsMap.about_achievements_alumni) newData.achievements[1].value = settingsMap.about_achievements_alumni + "+";
+                        if (settingsMap.about_achievements_awards) newData.achievements[2].value = settingsMap.about_achievements_awards + "+";
+                        if (settingsMap.about_achievements_distinction) newData.achievements[3].value = settingsMap.about_achievements_distinction + "%";
+                        
+                        return newData;
+                    });
+                } else if (settingsError) {
+                    console.error("Error fetching site settings:", settingsError);
+                }
+            } catch (err) {
+                console.error("Error fetching site settings for about page:", err);
+            }
+        }
+        
+        fetchSiteSettings();
     }, []);
 
     return (
@@ -75,7 +153,7 @@ export default function AboutPage() {
                 {/* Background Image */}
                 <div 
                     className="absolute inset-0 z-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url('/image.png')` }}
+                    style={{ backgroundImage: `url('${aboutData.hero.image}')` }}
                 >
                     <div className="absolute inset-0 bg-black/60"></div>
                 </div>
@@ -230,21 +308,11 @@ export default function AboutPage() {
                             <div className="absolute -top-4 -left-2 text-[#1e3a8a]/10 text-8xl font-serif leading-none select-none">"</div>
                             <div className="bg-[#f8f9fc] border border-gray-100 rounded-xl p-8 lg:p-10 space-y-4">
                                 <h3 className="text-xl font-bold text-[#1e3a8a] mb-4">Message from the Principal</h3>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    At TPS, we are committed to preparing students for the challenges of the 21st century. While we accord priority to academic excellence, we also lay strong emphasis on their wholesome development by achieving a balance among academic, physical and artistic pursuits. Our aim is to provide an enriching curriculum in a conducive learning environment.
-                                </p>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    The world-class facilities at our beautiful campus, with an efficient administrative backup and a team of competent, passionate teachers substantiate our commitment to quality.
-                                </p>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    We strive to provide globally competent education by blending the traditional education with modern communication. We seek and encourage learning out of the confines of the four walls and support the learners by instructional scaffolding so that the child not only learns independently but appreciates divergent thinking and applies the knowledge correctly.
-                                </p>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    The aim to provide skills to achieve goals and staying relevant in a dynamic environment is achieved through embracing ever-evolving technologies and sensibilities in the teaching-learning process.
-                                </p>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    We also believe in social inclusion and positive reflection to ensure Takshashila Public School remains the centre of excellence and creativity — a place where dreams find home without losing out our cultural wealth and experiences.
-                                </p>
+                                {aboutData.principalMessage.map((para, idx) => (
+                                    <p key={idx} className="text-gray-600 leading-relaxed text-[15px]">
+                                        {para}
+                                    </p>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -259,15 +327,11 @@ export default function AboutPage() {
                             <div className="absolute -top-4 -right-2 text-[#c11c22]/10 text-8xl font-serif leading-none select-none text-right w-full">"</div>
                             <div className="bg-[#fdf5f5] border border-gray-100 rounded-xl p-8 lg:p-10 space-y-4">
                                 <h3 className="text-xl font-bold text-[#c11c22] mb-4">Message from the Manager</h3>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    A school imparts knowledge to children, develops their skills, instills in them sound values, and nurtures their curiosity for lifelong learning. It sets the context for their future learning, and prepares them to be self-motivated and self-directed learners.
-                                </p>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    It also shapes their physical and mental health, and provides them with the environment for the holistic development and well-being. Our vision and everything that we do are guided by these educational precepts and practices, inspiring us to provide children with opportunities to grow to their full potential.
-                                </p>
-                                <p className="text-gray-600 leading-relaxed text-[15px]">
-                                    Our dedicated and caring educators teach our children not just with their minds but also with their hearts, making learning enjoyable, purposeful, and inclusive, and shape in them to be emotionally intelligent. They inspire our children to believe in themselves and think big with a growth mindset.
-                                </p>
+                                {aboutData.managerMessage.map((para, idx) => (
+                                    <p key={idx} className="text-gray-600 leading-relaxed text-[15px]">
+                                        {para}
+                                    </p>
+                                ))}
                             </div>
                         </div>
 

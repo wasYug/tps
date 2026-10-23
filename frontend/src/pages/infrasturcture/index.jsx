@@ -1,11 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { topFacilities, scienceLabs, midFacilities, sportsFacilities, bottomFacilities } from '../../data/infrastructureData';
+import { topFacilities as defaultTopFacilities, scienceLabs as defaultScienceLabs, midFacilities as defaultMidFacilities, sportsFacilities as defaultSportsFacilities, bottomFacilities as defaultBottomFacilities } from '../../data/infrastructureData';
+import { supabase } from '@/lib/supabase';
 import './infrastructure.css';
 
-
 export default function InfrastructurePage() {
+    const [heroData, setHeroData] = useState({
+        title: "Infrastructure",
+        desc: "At Takshashila, we believe that the learning environment is the \"third teacher.\" Our campus is meticulously designed to provide students with state-of-the-art facilities that foster curiosity, creativity, and holistic growth."
+    });
+    
+    const [topFacilities, setTopFacilities] = useState(defaultTopFacilities);
+    const [scienceLabs, setScienceLabs] = useState(defaultScienceLabs);
+    const [midFacilities, setMidFacilities] = useState(defaultMidFacilities);
+    const [sportsFacilities, setSportsFacilities] = useState(defaultSportsFacilities);
+    const [bottomFacilities, setBottomFacilities] = useState(defaultBottomFacilities);
+
     useEffect(() => {
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
@@ -21,6 +32,57 @@ export default function InfrastructurePage() {
         window.addEventListener("scroll", reveal);
         reveal(); // Initial check
 
+        async function fetchSiteSettings() {
+            try {
+                // generate all the keys we need
+                const keysToFetch = [
+                    "infra_hero_desc"
+                ];
+                
+                for(let i=0; i<2; i++) { keysToFetch.push(`infra_top_${i}_title`, `infra_top_${i}_desc`, `infra_top_${i}_image`); }
+                for(let i=0; i<3; i++) { keysToFetch.push(`infra_sci_${i}_title`, `infra_sci_${i}_desc`, `infra_sci_${i}_image`); }
+                for(let i=0; i<2; i++) { keysToFetch.push(`infra_mid_${i}_title`, `infra_mid_${i}_desc`, `infra_mid_${i}_image`); }
+                for(let i=0; i<4; i++) { keysToFetch.push(`infra_sports_${i}_title`, `infra_sports_${i}_desc`, `infra_sports_${i}_image`); }
+                for(let i=0; i<4; i++) { keysToFetch.push(`infra_bot_${i}_title`, `infra_bot_${i}_desc`, `infra_bot_${i}_image`); }
+
+                const { data: settingsData, error: settingsError } = await supabase
+                    .from("site_settings")
+                    .select("key, value")
+                    .in("key", keysToFetch);
+
+                if (!settingsError && settingsData) {
+                    const settingsMap = settingsData.reduce((acc, curr) => {
+                        acc[curr.key] = curr.value;
+                        return acc;
+                    }, {});
+
+                    setHeroData(prev => ({
+                        title: prev.title,
+                        desc: settingsMap.infra_hero_desc || prev.desc
+                    }));
+
+                    const updateArray = (prevArray, prefix) => {
+                        return prevArray.map((item, idx) => ({
+                            ...item,
+                            title: settingsMap[`${prefix}_${idx}_title`] || item.title,
+                            description: settingsMap[`${prefix}_${idx}_desc`] || item.description,
+                            image: settingsMap[`${prefix}_${idx}_image`] || item.image
+                        }));
+                    };
+
+                    setTopFacilities(prev => updateArray(prev, 'infra_top'));
+                    setScienceLabs(prev => updateArray(prev, 'infra_sci'));
+                    setMidFacilities(prev => updateArray(prev, 'infra_mid'));
+                    setSportsFacilities(prev => updateArray(prev, 'infra_sports'));
+                    setBottomFacilities(prev => updateArray(prev, 'infra_bot'));
+                }
+            } catch (err) {
+                console.error("Error fetching site settings for infra page:", err);
+            }
+        }
+        
+        fetchSiteSettings();
+
         return () => window.removeEventListener("scroll", reveal);
     }, []);
 
@@ -33,10 +95,10 @@ export default function InfrastructurePage() {
                 <div className="max-w-4xl mx-auto reveal active">
                     <span className="inline-block px-4 py-1.5 bg-[#1e3a8a]/20 text-[#1e3a8a] rounded-full font-bold text-sm uppercase tracking-widest mb-6">Our Campus</span>
                     <h1 className="font-display-lg text-4xl md:text-6xl text-secondary mb-8 leading-tight">
-                        Our World-Class <span className="text-primary">Infrastructure</span>
+                        Our World-Class <span className="text-primary">{heroData.title}</span>
                     </h1>
                     <p className="text-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
-                        At Takshashila, we believe that the learning environment is the "third teacher." Our campus is meticulously designed to provide students with state-of-the-art facilities that foster curiosity, creativity, and holistic growth.
+                        {heroData.desc}
                     </p>
                 </div>
             </section>
