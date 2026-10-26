@@ -23,6 +23,7 @@ import {
   Calendar,
   ShieldCheck,
   ArrowRight,
+  Image as ImageIcon,
 } from "lucide-react";
 import { sendChatMessage } from "../lib/chatbotapi";
 
@@ -60,93 +61,329 @@ const SUGGESTED_PROMPTS = [
   },
 ];
 
-// Lightweight markdown-to-JSX renderer for bot responses
+// Comprehensive markdown-to-JSX renderer for bot responses
 function FormattedMessage({ content }) {
   if (!content) return null;
 
-  // Split into paragraphs / blocks
-  const blocks = content.split(/\n\s*\n/);
+  // Clean raw image placeholders like [IMAGE: filename] if echoed from knowledge base
+  const sanitized = content.replace(/\[IMAGE:\s*[^\]]+\]/gi, "").trim();
+  if (!sanitized) return null;
 
-  return (
-    <div className="space-y-2 text-sm leading-relaxed text-slate-800">
-      {blocks.map((block, blockIdx) => {
-        const lines = block.split("\n");
+  const lines = sanitized.split(/\r?\n/);
+  const elements = [];
+  let i = 0;
 
-        // Check if block is a bullet list
-        const isBulletList = lines.every((line) => /^\s*[-*•]\s+/.test(line));
-        if (isBulletList) {
-          return (
-            <ul key={blockIdx} className="list-disc pl-5 space-y-1 text-slate-700">
-              {lines.map((line, lIdx) => {
-                const text = line.replace(/^\s*[-*•]\s+/, "");
-                return <li key={lIdx}>{formatInline(text)}</li>;
-              })}
-            </ul>
-          );
-        }
+  while (i < lines.length) {
+    const line = lines[i];
 
-        // Check if block is a numbered list
-        const isNumberedList = lines.every((line) => /^\s*\d+\.\s+/.test(line));
-        if (isNumberedList) {
-          return (
-            <ol key={blockIdx} className="list-decimal pl-5 space-y-1 text-slate-700">
-              {lines.map((line, lIdx) => {
-                const text = line.replace(/^\s*\d+\.\s+/, "");
-                return <li key={lIdx}>{formatInline(text)}</li>;
-              })}
-            </ol>
-          );
-        }
+    // Blank line
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
 
-        // Heading 3 or 4
-        if (block.startsWith("### ")) {
-          return (
-            <h4 key={blockIdx} className="font-semibold text-slate-900 mt-2 text-[15px]">
-              {formatInline(block.replace(/^###\s+/, ""))}
-            </h4>
-          );
-        }
+    // 1. Fenced Code Blocks (```)
+    if (line.trim().startsWith("```")) {
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].trim().startsWith("```")) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      if (i < lines.length) i++; // skip closing ```
+      elements.push(
+        <pre
+          key={`code-${elements.length}`}
+          className="bg-slate-900 text-slate-100 p-3 rounded-xl text-xs font-mono overflow-x-auto my-2 border border-slate-800"
+        >
+          <code>{codeLines.join("\n")}</code>
+        </pre>
+      );
+      continue;
+    }
 
-        // Regular paragraph with potential soft newlines
-        return (
-          <p key={blockIdx} className="text-slate-800">
-            {lines.map((line, lIdx) => (
-              <React.Fragment key={lIdx}>
-                {formatInline(line)}
-                {lIdx < lines.length - 1 && <br />}
-              </React.Fragment>
-            ))}
-          </p>
+    // 2. Horizontal Rules (---, ***, ___)
+    if (/^(\s*[-*_]\s*){3,}$/.test(line)) {
+      elements.push(
+        <hr key={`hr-${elements.length}`} className="my-2.5 border-t border-slate-200" />
+      );
+      i++;
+      continue;
+    }
+
+    // 3. Headings (#, ##, ###, ####, etc.)
+    const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+    if (headingMatch) {
+      const level = headingMatch[1].length;
+      const headingText = headingMatch[2];
+      if (level === 1) {
+        elements.push(
+          <h3
+            key={`h-${elements.length}`}
+            className="text-base font-bold text-[#294868] mt-3 mb-1 tracking-tight"
+          >
+            {formatInline(headingText)}
+          </h3>
         );
-      })}
-    </div>
-  );
+      } else if (level === 2) {
+        elements.push(
+          <h4
+            key={`h-${elements.length}`}
+            className="text-[14.5px] font-bold text-[#294868] mt-2.5 mb-1 tracking-tight flex items-center gap-1.5"
+          >
+            <span className="size-1.5 rounded-full bg-[#DD9808] shrink-0"></span>
+            <span>{formatInline(headingText)}</span>
+          </h4>
+        );
+      } else if (level === 3) {
+        elements.push(
+          <h5
+            key={`h-${elements.length}`}
+            className="text-sm font-semibold text-slate-900 mt-2 mb-0.5"
+          >
+            {formatInline(headingText)}
+          </h5>
+        );
+      } else {
+        elements.push(
+          <h6
+            key={`h-${elements.length}`}
+            className="text-xs font-semibold uppercase tracking-wider text-slate-600 mt-2 mb-0.5"
+          >
+            {formatInline(headingText)}
+          </h6>
+        );
+      }
+      i++;
+      continue;
+    }
+
+    // 4. Blockquotes (> ...)
+    if (line.trim().startsWith(">")) {
+      const quoteLines = [];
+      while (i < lines.length && lines[i].trim().startsWith(">")) {
+        quoteLines.push(lines[i].replace(/^>\s?/, ""));
+        i++;
+      }
+      elements.push(
+        <blockquote
+          key={`quote-${elements.length}`}
+          className="border-l-3 border-[#2F79B8] bg-slate-50/80 px-3 py-1.5 my-1.5 text-xs italic text-slate-700 rounded-r-lg"
+        >
+          {quoteLines.map((ql, qIdx) => (
+            <p key={qIdx}>{formatInline(ql)}</p>
+          ))}
+        </blockquote>
+      );
+      continue;
+    }
+
+    // 5. Tables (| col 1 | col 2 |)
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      const tableLines = [];
+      while (i < lines.length && lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|")) {
+        tableLines.push(lines[i].trim());
+        i++;
+      }
+      if (tableLines.length >= 2) {
+        const parseRow = (rowStr) =>
+          rowStr
+            .slice(1, -1)
+            .split("|")
+            .map((cell) => cell.trim());
+
+        const headers = parseRow(tableLines[0]);
+        const isSeparator = (rowStr) => /^\|[\s-:]+(\|[\s-:]+)*\|$/.test(rowStr);
+        const contentRows = tableLines.slice(1).filter((r) => !isSeparator(r));
+
+        elements.push(
+          <div
+            key={`table-${elements.length}`}
+            className="overflow-x-auto my-2 rounded-xl border border-slate-200/90 shadow-2xs"
+          >
+            <table className="min-w-full text-xs text-left divide-y divide-slate-200">
+              <thead className="bg-[#294868]/5 text-slate-800 font-semibold">
+                <tr>
+                  {headers.map((h, hIdx) => (
+                    <th key={hIdx} className="px-3 py-2 text-slate-900 font-semibold">
+                      {formatInline(h)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {contentRows.map((rowStr, rIdx) => {
+                  const cells = parseRow(rowStr);
+                  return (
+                    <tr key={rIdx} className="hover:bg-slate-50/60 transition-colors">
+                      {cells.map((c, cIdx) => (
+                        <td key={cIdx} className="px-3 py-1.5 text-slate-700">
+                          {formatInline(c)}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+        continue;
+      }
+    }
+
+    // 6. Unordered List (- , * , • )
+    if (/^\s*[-*•]\s+/.test(line)) {
+      const listItems = [];
+      while (i < lines.length && /^\s*[-*•]\s+/.test(lines[i])) {
+        listItems.push(lines[i].replace(/^\s*[-*•]\s+/, ""));
+        i++;
+      }
+      elements.push(
+        <ul
+          key={`ul-${elements.length}`}
+          className="list-disc pl-5 space-y-1 my-1.5 text-slate-700 marker:text-[#2F79B8]"
+        >
+          {listItems.map((item, itemIdx) => (
+            <li key={itemIdx}>{formatInline(item)}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // 7. Ordered List (1. , 2. )
+    if (/^\s*\d+\.\s+/.test(line)) {
+      const listItems = [];
+      while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+        listItems.push(lines[i].replace(/^\s*\d+\.\s+/, ""));
+        i++;
+      }
+      elements.push(
+        <ol
+          key={`ol-${elements.length}`}
+          className="list-decimal pl-5 space-y-1 my-1.5 text-slate-700 marker:font-semibold marker:text-[#2F79B8]"
+        >
+          {listItems.map((item, itemIdx) => (
+            <li key={itemIdx}>{formatInline(item)}</li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    // 8. Regular Paragraph (gather lines until blank line or next markdown block)
+    const paraLines = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() &&
+      !lines[i].trim().startsWith("```") &&
+      !lines[i].match(/^(#{1,6})\s+/) &&
+      !lines[i].trim().startsWith(">") &&
+      !/^\s*[-*•]\s+/.test(lines[i]) &&
+      !/^\s*\d+\.\s+/.test(lines[i]) &&
+      !/^(\s*[-*_]\s*){3,}$/.test(lines[i]) &&
+      !(lines[i].trim().startsWith("|") && lines[i].trim().endsWith("|"))
+    ) {
+      paraLines.push(lines[i]);
+      i++;
+    }
+
+    if (paraLines.length > 0) {
+      elements.push(
+        <p key={`p-${elements.length}`} className="text-slate-800 my-1">
+          {paraLines.map((pLine, lIdx) => (
+            <React.Fragment key={lIdx}>
+              {formatInline(pLine)}
+              {lIdx < paraLines.length - 1 && <br />}
+            </React.Fragment>
+          ))}
+        </p>
+      );
+    }
+  }
+
+  return <div className="space-y-1.5 text-sm leading-relaxed text-slate-800">{elements}</div>;
 }
 
-// Parses bold, italic, code inline elements safely
+// Parses markdown inline tokens: links, images, bold, italic, code, URLs, emails
 function formatInline(text) {
   if (!text) return text;
 
-  // Regex to match **bold**, *italic*, and `code`
-  const regex = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
+  // Regex matching: markdown images, markdown links, bold-italic, bold, italic, inline code, URLs, emails
+  const regex = /(!\[[^\]]*\]\([^)]+\)|\[[^\]]+\]\([^)]+\)|\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|__[^_]+__|\*[^*]+\*|_[^_]+_|`[^`]+`|https?:\/\/[^\s<]+|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
   const parts = text.split(regex);
 
   return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
+    if (!part) return null;
+
+    // Inline image: ![alt](url)
+    const imgMatch = part.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgMatch) {
+      const [, alt, url] = imgMatch;
+      return (
+        <span key={i} className="block my-2 rounded-xl overflow-hidden border border-slate-200">
+          <img
+            src={url}
+            alt={alt || "School image"}
+            className="w-full h-auto object-cover max-h-48 rounded-lg"
+          />
+        </span>
+      );
+    }
+
+    // Markdown Link: [label](url)
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      const [, label, url] = linkMatch;
+      return (
+        <a
+          key={i}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#2F79B8] hover:text-[#1E5A8E] underline font-medium inline-flex items-center gap-0.5 break-all"
+        >
+          {label}
+        </a>
+      );
+    }
+
+    // Bold-italic: ***text***
+    if (part.startsWith("***") && part.endsWith("***") && part.length > 6) {
+      return (
+        <strong key={i} className="font-semibold italic text-slate-900">
+          {part.slice(3, -3)}
+        </strong>
+      );
+    }
+
+    // Bold: **text** or __text__
+    if (
+      (part.startsWith("**") && part.endsWith("**") && part.length > 4) ||
+      (part.startsWith("__") && part.endsWith("__") && part.length > 4)
+    ) {
       return (
         <strong key={i} className="font-semibold text-slate-900">
           {part.slice(2, -2)}
         </strong>
       );
     }
-    if (part.startsWith("*") && part.endsWith("*")) {
+
+    // Italic: *text* or _text_
+    if (
+      (part.startsWith("*") && part.endsWith("*") && part.length > 2) ||
+      (part.startsWith("_") && part.endsWith("_") && part.length > 2)
+    ) {
       return (
         <em key={i} className="italic text-slate-700">
           {part.slice(1, -1)}
         </em>
       );
     }
-    if (part.startsWith("`") && part.endsWith("`")) {
+
+    // Inline Code: `code`
+    if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
       return (
         <code
           key={i}
@@ -156,8 +393,180 @@ function formatInline(text) {
         </code>
       );
     }
+
+    // Direct URL: https://...
+    if (/^https?:\/\/[^\s<]+$/.test(part)) {
+      return (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#2F79B8] hover:text-[#1E5A8E] underline font-medium break-all"
+        >
+          {part}
+        </a>
+      );
+    }
+
+    // Direct Email: user@domain.com
+    if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(part)) {
+      return (
+        <a
+          key={i}
+          href={`mailto:${part}`}
+          className="text-[#2F79B8] hover:text-[#1E5A8E] underline font-medium"
+        >
+          {part}
+        </a>
+      );
+    }
+
     return part;
   });
+}
+
+// Safely extracts, flattens, and deduplicates image items from either arrays or topic-grouped objects
+function extractImages(imagesData) {
+  if (!imagesData) return [];
+
+  const rawList = [];
+
+  if (Array.isArray(imagesData)) {
+    imagesData.forEach((item) => {
+      if (!item) return;
+      if (typeof item === "string") {
+        rawList.push({ url: item, alt: "School photograph", caption: "" });
+      } else if (typeof item === "object" && item.url) {
+        rawList.push({
+          url: item.url,
+          alt: item.alt || item.caption || "School photograph",
+          caption: item.caption || item.alt || "",
+          category: item.category || null,
+        });
+      }
+    });
+  } else if (typeof imagesData === "object") {
+    for (const [category, val] of Object.entries(imagesData)) {
+      const cleanCategory =
+        category !== "other" && category !== "default"
+          ? category.replace(/_/g, " ")
+          : null;
+
+      if (Array.isArray(val)) {
+        val.forEach((item) => {
+          if (!item) return;
+          if (typeof item === "string") {
+            rawList.push({
+              url: item,
+              alt: cleanCategory || "School photograph",
+              caption: "",
+              category: cleanCategory,
+            });
+          } else if (typeof item === "object" && item.url) {
+            rawList.push({
+              url: item.url,
+              alt: item.alt || item.caption || cleanCategory || "School photograph",
+              caption: item.caption || item.alt || "",
+              category: cleanCategory,
+            });
+          }
+        });
+      } else if (val && typeof val === "object" && val.url) {
+        rawList.push({
+          url: val.url,
+          alt: val.alt || val.caption || cleanCategory || "School photograph",
+          caption: val.caption || val.alt || "",
+          category: cleanCategory,
+        });
+      }
+    }
+  }
+
+  // Deduplicate by URL
+  const seen = new Set();
+  const result = [];
+  for (const img of rawList) {
+    if (img.url && typeof img.url === "string" && !seen.has(img.url.trim())) {
+      seen.add(img.url.trim());
+      result.push({ ...img, url: img.url.trim() });
+    }
+  }
+  return result;
+}
+
+// Renders the responsive image gallery inside assistant message bubbles
+function MessageImages({ images, onPreview }) {
+  const [failedUrls, setFailedUrls] = useState({});
+
+  const validImages = React.useMemo(() => {
+    return extractImages(images).filter((img) => !failedUrls[img.url]);
+  }, [images, failedUrls]);
+
+  if (!validImages || validImages.length === 0) return null;
+
+  const handleImageError = (url) => {
+    setFailedUrls((prev) => ({ ...prev, [url]: true }));
+  };
+
+  const isSingle = validImages.length === 1;
+
+  return (
+    <div className="mt-3 pt-2.5 border-t border-slate-100">
+      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#294868] mb-2">
+        <ImageIcon className="size-3.5 text-[#2F79B8]" />
+        <span>Campus & Facility Photos ({validImages.length})</span>
+      </div>
+
+      <div className={`grid gap-2 ${isSingle ? "grid-cols-1" : "grid-cols-2"}`}>
+        {validImages.map((img, idx) => (
+          <div
+            key={idx}
+            onClick={() => onPreview(img)}
+            className="group relative rounded-xl overflow-hidden border border-slate-200/90 bg-slate-50 shadow-xs hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col hover:border-[#2F79B8]/40"
+          >
+            <div
+              className={`relative overflow-hidden w-full ${
+                isSingle ? "h-40 sm:h-44" : "h-28 sm:h-30"
+              } bg-slate-100`}
+            >
+              <img
+                src={img.url}
+                alt={img.alt || "School photograph"}
+                loading="lazy"
+                onError={() => handleImageError(img.url)}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+
+              {/* Hover Dark Overlay with View Action */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center p-2">
+                <span className="bg-white/95 text-slate-900 text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-xs transform translate-y-1 group-hover:translate-y-0 transition-transform">
+                  <Maximize2 className="size-3 text-[#2F79B8]" />
+                  View Photo
+                </span>
+              </div>
+
+              {/* Category pill badge */}
+              {img.category && (
+                <span className="absolute top-1.5 left-1.5 bg-[#294868]/85 backdrop-blur-xs text-white text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded shadow-xs">
+                  {img.category}
+                </span>
+              )}
+            </div>
+
+            {/* Optional caption bar */}
+            {img.caption && (
+              <div className="px-2 py-1.5 bg-white border-t border-slate-100/80">
+                <p className="text-[11px] font-medium text-slate-700 truncate" title={img.caption}>
+                  {img.caption}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function ChatbotWidget() {
@@ -177,9 +586,23 @@ export default function ChatbotWidget() {
   const [isLoading, setIsLoading] = useState(false);
   const [expandedSources, setExpandedSources] = useState({});
   const [copiedId, setCopiedId] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setPreviewImage(null);
+      }
+    };
+    if (previewImage) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewImage]);
 
   // Auto-scroll when new messages arrive or loading state changes
   useEffect(() => {
@@ -266,6 +689,7 @@ export default function ChatbotWidget() {
         id: `bot-${Date.now()}`,
         sender: "bot",
         text: response.answer || "Thank you for asking. I could not find additional details on that topic.",
+        images: response.images,
         sources: response.sources || [],
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
@@ -536,6 +960,12 @@ export default function ChatbotWidget() {
                       {/* Message Content */}
                       <FormattedMessage content={msg.text} />
 
+                      {/* Attached Images */}
+                      <MessageImages
+                        images={msg.images}
+                        onPreview={(img) => setPreviewImage(img)}
+                      />
+
                       {/* Error State with Retry Button */}
                       {msg.isError && msg.retryQuery && (
                         <div className="mt-3 pt-2.5 border-t border-rose-200/70 flex items-center gap-2">
@@ -733,6 +1163,74 @@ export default function ChatbotWidget() {
           </div>
         </div>
       )}
+
+      {/* ── Image Lightbox Preview Modal ── */}
+      {previewImage && (
+        <div
+          role="dialog"
+          aria-label="Image Preview"
+          onClick={() => setPreviewImage(null)}
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-2xl w-full bg-slate-900/95 border border-white/20 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in duration-200"
+          >
+            {/* Top Bar */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
+              <div className="flex items-center gap-2 min-w-0 pr-2">
+                <ImageIcon className="size-4 text-[#DD9808] shrink-0" />
+                <h4 className="text-white text-xs sm:text-sm font-semibold truncate">
+                  {previewImage.caption || previewImage.alt || "Takshashila Public School Photo"}
+                </h4>
+                {previewImage.category && (
+                  <span className="bg-[#2F79B8] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0">
+                    {previewImage.category}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <a
+                  href={previewImage.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                  title="Open original image in new tab"
+                >
+                  <ExternalLink className="size-4" />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setPreviewImage(null)}
+                  className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                  title="Close preview"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Image Center View */}
+            <div className="relative flex-1 bg-black/60 flex items-center justify-center p-2 sm:p-4 min-h-[220px] overflow-hidden">
+              <img
+                src={previewImage.url}
+                alt={previewImage.alt || "Takshashila School Photo"}
+                className="max-h-[65vh] w-auto max-w-full object-contain rounded-lg shadow-lg select-none"
+              />
+            </div>
+
+            {/* Bottom Caption Bar */}
+            {(previewImage.caption || previewImage.alt) && (
+              <div className="px-4 py-2.5 bg-black/40 border-t border-white/10 text-center">
+                <p className="text-xs text-white/90 font-medium">
+                  {previewImage.caption || previewImage.alt}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }
+

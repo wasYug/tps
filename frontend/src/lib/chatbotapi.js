@@ -52,6 +52,7 @@ export async function sendChatMessage(question) {
 
       return {
         answer: data.answer,
+        images: data.images,
         sources: Array.isArray(data.sources) ? data.sources : [],
       };
     } catch (err) {

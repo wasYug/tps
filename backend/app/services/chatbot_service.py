@@ -8,5 +8,6 @@ def get_chatbot_response(request: ChatRequest) -> ChatResponse:
 
     return ChatResponse(
         answer=result["answer"],
+        images=result["images"],
         sources=result["sources"],
     )
